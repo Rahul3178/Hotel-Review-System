@@ -1,4 +1,4 @@
-package com.hotelreview.user.service.payloads;
+package com.hotelreview.HotelService.payloads;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,6 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ApiResponse
 {
-   private String message;
-   private boolean status;
+    private String message;
+    private  Boolean status;
 }
