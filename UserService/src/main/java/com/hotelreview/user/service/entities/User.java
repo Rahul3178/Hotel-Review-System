@@ -1,12 +1,13 @@
 package com.hotelreview.user.service.entities;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
