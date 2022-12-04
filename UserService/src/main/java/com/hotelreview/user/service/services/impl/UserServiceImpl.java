@@ -1,14 +1,20 @@
 package com.hotelreview.user.service.services.impl;
 
+import com.hotelreview.user.service.entities.Hotel;
+import com.hotelreview.user.service.entities.Rating;
 import com.hotelreview.user.service.entities.User;
 import com.hotelreview.user.service.exceptions.ResourceNotFoundException;
 import com.hotelreview.user.service.payloads.UserDTO;
 import com.hotelreview.user.service.repositories.UserRepo;
 import com.hotelreview.user.service.services.UserService;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +28,12 @@ public class UserServiceImpl implements UserService
     @Autowired
     private ModelMapper modelMapper;
     // here we will implement all methods of user interface
+
+    @Autowired
+    private RestTemplate restTemplate; // for api calling
+
+    @Autowired
+    private Logger logger;
 
     @Override
     public UserDTO createUser(UserDTO userDTO)
@@ -62,6 +74,27 @@ public class UserServiceImpl implements UserService
     @Override
     public UserDTO getSingleUser(Integer uid) throws ResourceNotFoundException {
         User fuser=this.userRepo.findById(uid).orElseThrow(()->new ResourceNotFoundException("User","user_Id",uid));
+        // fetch rating of above user from rating service
+        // we have to call rating service using api
+        //http://localhost:8083/ratings/users/9
+        //calling http client with the help of Http api-> using rest template
+
+    Rating[] ratingsOfUser=   restTemplate.getForObject("http://localhost:8083/ratings/users/"+fuser.getUserId(), Rating[].class);
+        List<Rating> ratings = Arrays.stream(ratingsOfUser).toList();
+
+
+        logger.info("fetch Ratings"+ratingsOfUser);
+       List<Rating> allRatings=ratings.stream().map(rating -> {
+           // calling hotel service to get Hotel
+         ResponseEntity<Hotel> hotels =  restTemplate.getForEntity("http://localhost:8082/hotels/"+rating.getHotelId(),Hotel.class);
+          Hotel hotel= hotels.getBody();
+           // set Hotel Ratings
+            logger.info("Response status code: {}"+ hotels.getStatusCode());
+           rating.setHotel(hotel);
+           //return ratings;
+           return rating;
+        }).collect(Collectors.toList());
+        fuser.setRatings(allRatings);
         return this.userToUserDTO(fuser);
     }
 

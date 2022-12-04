@@ -23,12 +23,12 @@ public class HotelContoller
         return new ResponseEntity<>(hotelDTO1,HttpStatus.CREATED);
     }
 
-    @GetMapping("/getAll")
+    @GetMapping("/")
     public ResponseEntity<List<HotelDTO>> getHotels()
     {
         return ResponseEntity.ok(this.hotelService.getHotels());
     }
-    @GetMapping("/get/{hid}")
+    @GetMapping("/{hid}")
     public ResponseEntity<HotelDTO> getHotel(@PathVariable String hid)
     {
        HotelDTO hotelDTO =this.hotelService.getSingleHotel(hid);
