@@ -79,14 +79,14 @@ public class UserServiceImpl implements UserService
         //http://localhost:8083/ratings/users/9
         //calling http client with the help of Http api-> using rest template
 
-    Rating[] ratingsOfUser=   restTemplate.getForObject("http://localhost:8083/ratings/users/"+fuser.getUserId(), Rating[].class);
+    Rating[] ratingsOfUser=   restTemplate.getForObject("http://RATING-SERVICE/ratings/users/"+fuser.getUserId(), Rating[].class);
         List<Rating> ratings = Arrays.stream(ratingsOfUser).toList();
 
 
         logger.info("fetch Ratings"+ratingsOfUser);
        List<Rating> allRatings=ratings.stream().map(rating -> {
            // calling hotel service to get Hotel
-         ResponseEntity<Hotel> hotels =  restTemplate.getForEntity("http://localhost:8082/hotels/"+rating.getHotelId(),Hotel.class);
+         ResponseEntity<Hotel> hotels =  restTemplate.getForEntity("http://HOTEL-SERVICE/hotels/"+rating.getHotelId(),Hotel.class);
           Hotel hotel= hotels.getBody();
            // set Hotel Ratings
             logger.info("Response status code: {}"+ hotels.getStatusCode());
